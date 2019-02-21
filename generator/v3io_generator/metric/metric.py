@@ -31,8 +31,11 @@ class Metric:
         self.error_metric = self.Peak_error()
         self.peak_chance = 0
 
+        try:
+            self.value_history = float(initial_value)
+        except:
+            self.value_history = 0
 
-        self.value_history = initial_value
         self.validations = configuration.setdefault('validation', {'distribution': {}, 'metric': {}})
         self.validation_distribution = self.validations['distribution']
         self.validation_metric = self.validations['metric']
@@ -43,6 +46,7 @@ class Metric:
         self.distribution = self.available_distributions[configuration.setdefault('distribution', 'normal')]
         self.params = configuration.setdefault('distribution_params', {})
         self.past_based_value = configuration.setdefault('past_based_value', False)
+        self.accuracy = configuration.setdefault('accuracy', 2)
 
         # Validation
         self.distribution_min = self.validation_distribution.setdefault('min', np.NINF)
@@ -135,4 +139,4 @@ class Metric:
         while True:
             value = self.get_value()
             res = self.validate_value('metric', value) if self.should_validate_metric_values else value
-            yield {'value': res, 'is_error': self.is_in_peak_error}
+            yield {'value': round(res, self.accuracy), 'is_error': self.is_in_peak_error}

@@ -19,7 +19,7 @@ class Generator_df:
         self.dimension_hashes = []
         self.initial_values = {}
         self.dimensions = self.define_uh(df_labels=user_hierarchy[list(list(user_hierarchy.columns) - metrics.keys())],
-                                         df_metrics=user_hierarchy[metrics.keys()])
+                                         df_metrics=user_hierarchy[self.get_metric_dimensions(user_hierarchy, list(metrics))])
 
 
         self.metric_groups = {dimension_hash: Metric_Group(metrics=metrics, initial_values=self.initial_values[dimension_hash],
@@ -45,6 +45,10 @@ class Generator_df:
             return datetime.timedelta(seconds=seconds)
         else:
             return user_interval
+
+    def get_metric_dimensions(self, df, defined_metrics):
+        available_metrics = [metric for metric in defined_metrics if metric in df.columns]
+        return available_metrics
 
     def define_uh(self, df_labels: pd.DataFrame, df_metrics: pd.DataFrame):
         labels = []
